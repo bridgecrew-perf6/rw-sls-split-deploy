@@ -39,8 +39,8 @@ functions:
     tags: # Tags for this specific lambda function
       endpoint: /.redwood/functions/auth
     # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
-    # environment:
-    #   YOUR_FIRST_ENV_VARIABLE: ${env:YOUR_FIRST_ENV_VARIABLE}
+    environment:
+      DATABASE_URL: ${param:DATABASE_URL}
     handler: auth.handler
     events:
       - httpApi:
@@ -58,8 +58,8 @@ functions:
     tags: # Tags for this specific lambda function
       endpoint: /.redwood/functions/graphql
     # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
-    # environment:
-    #   YOUR_FIRST_ENV_VARIABLE: ${env:YOUR_FIRST_ENV_VARIABLE}
+    environment:
+      DATABASE_URL: ${param:DATABASE_URL}
     handler: graphql.handler
     events:
       - httpApi:
