@@ -19,6 +19,8 @@ custom:
   client:
     bucketName: redwood-sls-finch-deploy
     distributionFolder: web/dist
+    indexDocument: index.html
+    errorDocument: index.html
 
 # See https://www.serverless.com/blog/cors-api-gateway-survival-guide/
 # doesnt seem to work though
@@ -37,10 +39,17 @@ custom:
 
 provider:
   name: aws
+  lambdaHashingVersion: "20201221"
   runtime: nodejs14.x
   region: us-east-2 # This is the AWS region where the service will be deployed.
   httpApi: # HTTP API is used by default. To learn about the available options in API Gateway, see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html
-    cors: true
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - Auth-Provider
     payload: "1.0"
   stackTags: # Add CloudFormation stack tags here
     source: serverless
@@ -62,11 +71,15 @@ functions:
       endpoint: /auth
     environment:
       DATABASE_URL: ${param:DATABASE_URL}
+      SESSION_SECRET: ${param:SESSION_SECRET}
     handler: auth.handler
     events:
       - httpApi:
           path: /auth
           method: POST
+      - httpApi:
+          path: /auth
+          method: GET
   graphql:
     description: graphql function deployed on AWS Lambda
     package:
