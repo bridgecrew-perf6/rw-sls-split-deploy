@@ -8,7 +8,9 @@
     ]
   },
   "devDependencies": {
-    "@redwoodjs/core": "0.39.3"
+    "@redwoodjs/core": "0.39.3",
+    "serverless-finch": "^2.7.6",
+    "serverless-plugin-scripts": "^1.0.2"
   },
   "eslintConfig": {
     "extends": "@redwoodjs/eslint-config",

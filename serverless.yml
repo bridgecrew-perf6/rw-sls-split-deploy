@@ -7,11 +7,33 @@ app: redwood-nft-test
 
 plugins:
   # - serverless-dotenv-plugin
+  - serverless-finch
+  - serverless-plugin-scripts
 
 custom:
   scripts:
-    hooks:
-    'before:deploy:deploy': 'yarn rw deploy aws serverless'
+  # trying a hacky workaround, to see if we can get the API_URL after deploy
+  # how can we get the endpoint here?
+  # hooks:
+  # "before:deploy:deploy": 'echo "Building web with API_URL: $API_URL" && yarn rw build web && sls client deploy'
+  client:
+    bucketName: redwood-sls-finch-deploy
+    distributionFolder: web/dist
+
+# See https://www.serverless.com/blog/cors-api-gateway-survival-guide/
+# doesnt seem to work though
+# resources:
+#   Resources:
+#     GatewayResponseDefault4XX:
+#       Type: "AWS::ApiGateway::GatewayResponse"
+
+#       Properties:
+#         ResponseParameters:
+#           gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+#           gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+#         ResponseType: DEFAULT_4XX
+#         RestApiId:
+#           Ref: "ApiGatewayRestApi"
 
 provider:
   name: aws
@@ -19,7 +41,7 @@ provider:
   region: us-east-2 # This is the AWS region where the service will be deployed.
   httpApi: # HTTP API is used by default. To learn about the available options in API Gateway, see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html
     cors: true
-    payload: '1.0'
+    payload: "1.0"
   stackTags: # Add CloudFormation stack tags here
     source: serverless
     name: Redwood Lambda API with HTTP API Gateway
@@ -37,17 +59,13 @@ functions:
     memorySize: 1024 # mb
     timeout: 25 # seconds (max: 29)
     tags: # Tags for this specific lambda function
-      endpoint: /.redwood/functions/auth
-    # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
+      endpoint: /auth
     environment:
       DATABASE_URL: ${param:DATABASE_URL}
     handler: auth.handler
     events:
       - httpApi:
-          path: /.redwood/functions/auth
-          method: GET
-      - httpApi:
-          path: /.redwood/functions/auth
+          path: /auth
           method: POST
   graphql:
     description: graphql function deployed on AWS Lambda
@@ -56,16 +74,11 @@ functions:
     memorySize: 1024 # mb
     timeout: 25 # seconds (max: 29)
     tags: # Tags for this specific lambda function
-      endpoint: /.redwood/functions/graphql
-    # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
+      endpoint: /graphql
     environment:
       DATABASE_URL: ${param:DATABASE_URL}
     handler: graphql.handler
     events:
       - httpApi:
-          path: /.redwood/functions/graphql
-          method: GET
-      - httpApi:
-          path: /.redwood/functions/graphql
+          path: /graphql
           method: POST
-
