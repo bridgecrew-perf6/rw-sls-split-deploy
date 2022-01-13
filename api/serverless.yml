@@ -1,23 +1,11 @@
 # See the full yml reference at https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
-service: rw-sls-2
+service: rw-sls-4-api
 
 # Uncomment org and app if you want to integrate your deployment with the Serverless dashboard. See https://www.serverless.com/framework/docs/dashboard/ for more details.
-# org: your-org
-# app: your-app
+org: dac09
+app: rw-sls-4
 
-plugins:
-  - serverless-dotenv-plugin
-  - serverless-lift
-
-custom:
-  dotenv:
-    include:
-      -  # List the environment variables you want to include from your .env file here.
-
-constructs:
-  rw-web:
-    type: static-website
-    path: web/dist
+useDotenv: true
 
 provider:
   name: aws
@@ -44,6 +32,9 @@ provider:
   tags: # Add service wide tags here
     name: Redwood Lambda API with HTTP API Gateway
   lambdaHashingVersion: 20201221 # https://www.serverless.com/framework/docs/deprecations/#LAMBDA_HASHING_VERSION_V2
+  environment:
+    DATABASE_URL: ${param:DATABASE_URL}
+    SESSION_SECRET: ${param:SESSION_SECRET}
 
 package:
   individually: true
@@ -57,14 +48,11 @@ functions:
   auth:
     description: auth function deployed on AWS Lambda
     package:
-      artifact: api/dist/zipball/auth.zip # This is the default location of the zip file generated during the deploy command.
+      artifact: dist/zipball/auth.zip # This is the default location of the zip file generated during the deploy command.
     memorySize: 1024 # mb
     timeout: 25 # seconds (max: 29)
     tags: # Tags for this specific lambda function
       endpoint: /auth
-    # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
-    # environment:
-    #   YOUR_FIRST_ENV_VARIABLE: ${env:YOUR_FIRST_ENV_VARIABLE}
     handler: auth.handler
     events:
       - httpApi:
@@ -76,14 +64,11 @@ functions:
   graphql:
     description: graphql function deployed on AWS Lambda
     package:
-      artifact: api/dist/zipball/graphql.zip # This is the default location of the zip file generated during the deploy command.
+      artifact: dist/zipball/graphql.zip # This is the default location of the zip file generated during the deploy command.
     memorySize: 1024 # mb
     timeout: 25 # seconds (max: 29)
     tags: # Tags for this specific lambda function
       endpoint: /graphql
-    # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
-    # environment:
-    #   YOUR_FIRST_ENV_VARIABLE: ${env:YOUR_FIRST_ENV_VARIABLE}
     handler: graphql.handler
     events:
       - httpApi:
