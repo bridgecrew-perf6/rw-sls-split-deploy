@@ -6,7 +6,7 @@ import BlogPostsCell from 'src/components/BlogPostsCell'
 const HomePage = () => {
   return (
     <>
-      <h2>Bazinga 2</h2>
+      <h2>Bazingaz</h2>
       <BlogPostsCell />;
     </>
   )
